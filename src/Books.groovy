@@ -104,3 +104,5 @@ assert x2.size() == 10
 assert x2.from == 1
 assert x2.to == 10
 assert x2.reverse() == 10..1
+
+// CLOSURES
