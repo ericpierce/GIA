@@ -106,3 +106,6 @@ assert x2.to == 10
 assert x2.reverse() == 10..1
 
 // CLOSURES
+[1,2,3].each{ entry -> println entry }
+
+[1,2,3].each{ println it }
