@@ -109,3 +109,65 @@ assert x2.reverse() == 10..1
 [1,2,3].each{ entry -> println entry }
 
 [1,2,3].each{ println it }
+
+
+def totalClinks = 0
+def partyPeople = 100
+1.upto(partyPeople) { guestNumber ->
+    clinksWithGuest = guestNumber-1
+    totalClinks += clinksWithGuest // #1 modifies outer scope
+}
+assert totalClinks == (partyPeople * (partyPeople-1)) / 2
+println totalClinks
+
+totalClinks = 0
+partyPeople = 100
+1.upto(partyPeople) {
+    clinksWithGuest = it-1
+    totalClinks += clinksWithGuest // #1 modifies outer scope
+}
+println totalClinks
+
+// CTRL STRUCTURES
+if (false) assert false // #1 'if' as one-liner
+
+if (null)   // #2 Null is false
+{           // #3 Blocks may start on new line
+    assert false
+} else {
+    assert true
+}
+
+def i = 0 // #4 Classic 'while'
+while (i < 10) { // #4
+    i++ // #4
+}       // #4
+assert i == 10 // #4
+
+def clinks = 0 // #5 'for' in 'range'
+for (remainingGuests in 0..9) { // #5
+    clinks += remainingGuests // #5
+} // #5
+assert clinks == (10*9)/2 // #5
+
+def list = [0, 1, 2, 3] // #6 'for' in 'list'
+for (j in list) { // #6
+    assert j == list[j] // #6
+} // #6
+
+list.each() { item -> // #7 'each' method with a closure
+    assert item == list[item] // #7
+} // #7
+
+switch(3) { // #8 Classic 'switch'
+    case 1 : assert false; break // #8
+    case 3 : assert true; break // #8
+    default: assert false // #8
+} // #8
+
+
+// GDK
+if ('Hello World!'.startsWith('Hello')) {
+    println '"Hello World!" really does start with "Hello"!'
+    // Code to execute if the string starts with 'Hello'
+}
