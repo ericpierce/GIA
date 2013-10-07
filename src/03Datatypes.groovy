@@ -33,3 +33,118 @@ def rect = new Rectangle()
 rect.location = [0, 0] // Point
 rect.size = [width:100, height:100] // Dimension
 
+
+// 3.3.1 Overview of overridable operators
+def a = 1
+a=a.next()
+assert a == 2
+println a.unaryMinus()
+
+def name = "kai"
+assert name.getAt(1) == "a"
+
+def b = 3
+println  a.compareTo(b)
+println  b.compareTo(a)
+
+
+// 3.3.2 Overridden operators in action
+import groovy.transform.Immutable
+
+@Immutable class Money { // #1 overrides == operator
+    int amount
+    String currency
+
+    Money plus (Money other) { // #2a implements + operator
+        if (null == other) return this
+        if (other.currency != currency) {
+            throw new IllegalArgumentException(
+                "cannot add $other.currency to $currency")
+        }
+        return new Money(amount + other.amount, currency)
+    }
+
+    Money plus (Integer other) { // #2b overload
+        return new Money(amount + other, currency)
+    }
+}
+
+Money buck = new Money(1, 'USD')
+assert buck
+assert buck == new Money(1, 'USD') // #3 use overridden ==
+assert buck + buck == new Money(2, 'USD') // #4 use implemented +
+assert buck + 1 == new Money(2, 'USD') // #4 use implemented +
+
+
+// 3.4.1 Varieties of string literals
+def myString = "hello\nthere"
+def myChar = 'x'
+def myChar2 = "x"
+
+// Listing 3.4 Working with GStrings
+def me = 'Tarzan'   //|#1 Abbreviated
+def you = 'Jane'    //|#1 dollar syntax
+def line = "me $me - you $you" //|#1
+assert line == 'me Tarzan - you Jane'
+
+def date = new Date(0)      //|#2 Extended
+def out = "Year $date.year Month $date.month Day $date.date" //|#2 abbreviation
+def out2 = "Year ${date.getYear()} Month ${date.getMonth()} Day ${date.getDate()}" //|#2 abbreviation
+println out
+println out2
+// assert out == 'Year 70 Month 0 Day 1'
+assert out == 'Year 69 Month 11 Day 31'     // ?? different than book
+
+out = "Date is ${date.toGMTString()} !"     //|#3 Full syntax with
+assert out == 'Date is 1 Jan 1970 00:00:00 GMT !' //|#3 braces
+
+//#4 Multiline GStrings start
+def sql = """
+SELECT FROM MyTable
+WHERE Year = $date.year
+"""
+
+/*  doesn't assert
+assert sql ==
+        """
+SELECT FROM MyTable
+WHERE Year = 70
+"""     //#4 Multiline GStrings end
+*/
+
+assert sql ==
+        """
+SELECT FROM MyTable
+WHERE Year = 69
+"""     //#4 Multiline GStrings end
+
+
+out = "my 0.02\$"           //#5 Escaped dollar sign
+assert out == 'my 0.02$'    //#6 Literal dollar sign
+
+
+def me2 = 'Tarzan'
+def you2 = 'Jane'
+def line2 = "me $me2 - you $you2"
+assert line2 == 'me Tarzan - you Jane'
+assert line2 instanceof GString
+assert line2.strings[0] == 'me '
+assert line2.strings[1] == ' - you '
+assert line2.values[0] == 'Tarzan'
+assert line2.values[1] == 'Jane'
+
+// Listing 3.5 A miscellany of string operations
+String greeting = 'Hello Groovy!'
+assert greeting.startsWith('Hello')
+assert greeting.getAt(0) == 'H'
+assert greeting[0] == 'H'
+assert greeting.indexOf('Groovy') >= 0
+assert greeting.contains('Groovy')
+assert greeting[6..11] == 'Groovy'
+assert 'Hi' + greeting - 'Hello' == 'Hi Groovy!'
+assert greeting.count('o') == 3
+assert 'x'.padLeft(3) == ' x'
+assert 'x'.padRight(3,'_') == 'x__'
+assert 'x'.center(3) == ' x '
+assert 'x' * 3 == 'xxx'
+
