@@ -156,3 +156,10 @@ greeting2 << '!' //#2 Leftshift on StringBuffer
 assert greeting2.toString() == 'Hello Groovy!'
 greeting2[1..4] = 'i' //#3 Substring 'ello' becomes 'i'   (surprised this doesn't become 'iiii'
 assert greeting2.toString() == 'Hi Groovy!'
+
+// Listing 3.6 Regular expression GStrings
+assert "abc" == /abc/
+assert "\\d" == /\d/
+def reference = "hello"
+assert reference == /$reference/    // $someExpression
+assert reference == (/$reference/)  // force parser to interpret expression
