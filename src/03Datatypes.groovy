@@ -140,7 +140,7 @@ assert greeting.getAt(0) == 'H'
 assert greeting[0] == 'H'
 assert greeting.indexOf('Groovy') >= 0
 assert greeting.contains('Groovy')
-assert greeting[6..11] == 'Groovy'
+assert greeting[6..11] == 'Groovy'  // wow!
 assert 'Hi' + greeting - 'Hello' == 'Hi Groovy!'
 assert greeting.count('o') == 3
 assert 'x'.padLeft(3) == '  x'
@@ -148,3 +148,11 @@ assert 'x'.padRight(3,'_') == 'x__'
 assert 'x'.center(3) == ' x '
 assert 'x' * 3 == 'xxx'
 
+// some more demoing StringBuffer usage
+def greeting2 = 'Hello'
+greeting2 <<= ' Groovy' // #1 Leftshift and assign
+assert greeting2 instanceof java.lang.StringBuffer
+greeting2 << '!' //#2 Leftshift on StringBuffer
+assert greeting2.toString() == 'Hello Groovy!'
+greeting2[1..4] = 'i' //#3 Substring 'ello' becomes 'i'   (surprised this doesn't become 'iiii'
+assert greeting2.toString() == 'Hi Groovy!'
