@@ -167,19 +167,26 @@ assert reference == (/$reference/)  // force parser to interpret expression
 // Listing 3.7 Regular expressions
 def twister = 'she sells sea shells at the sea shore of seychelles'
 // twister must contain a substring of size 3
-// that starts with s and ends with a assert twister =~ /s.a/ // #1 Regex find operator as
+// that starts with s and ends with a
+assert twister =~ /s.a/ // #1 Regex find operator as
+
 def finder = (twister =~ /s.a/) // #2 Find expression evaluates
 assert finder instanceof java.util.regex.Matcher // #2 matcher object
+println '1st match: ' + finder[0]
+println '2nd match: ' + finder[1]
 
 // twister must contain only words delimited by single spaces
 assert twister ==~ /(\w+ \w+)*/ // #3 Regex match operator
-
 
 def WORD = /\w+/
 matches = (twister ==~ /($WORD $WORD)*/) // #4 Match expression evaluates
 assert matches instanceof java.lang.Boolean // #4 to a boolean
 
+
+// I don't get this.  Wouldn't 'she' match?
 assert (twister ==~ /s.e/) == false // #5 Match is full unlike find
+// Or is ==~ supposedly covers the whole string, why wouldn't this work?
+// assert (twister ==~ /s.s/) == true // #5 Match is full unlike find
 
 def wordsByX = twister.replaceAll(WORD, 'x')
 assert wordsByX == 'x x x x x x x x x x'
@@ -187,3 +194,39 @@ assert wordsByX == 'x x x x x x x x x x'
 def words = twister.split(/ /) // #6 Split returns a list of
 assert words.size() == 10
 assert words[0] == 'she'
+
+twister.eachMatch( /s.e/, { println it })       // outputs all matched strings
+twister.eachMatch( /s.*?e/, { println it })     // outputs all matched strings
+twister.eachMatch( /s(.*?)e/, { println it })   // outputs array for each match (1st group is entire regex; 2nd is the group
+// twister.eachMatch( /s(.*?)e/ ) { println it }   // same
+
+// Listing 3.8 Working on each match of a pattern
+def myFairStringy = 'The rain in Spain stays mainly in the plain!'
+// words that end with 'ain': \b\w*ain\b
+def wordEnding = /\w*ain/
+def rhyme = /\b$wordEnding\b/
+def found = ''
+myFairStringy.eachMatch(rhyme) { match -> // #1 String.eachMatch(Pattern)
+    found += match + ' '
+}
+assert found == 'rain Spain plain '
+
+// Same but written another way
+found = ''
+(myFairStringy =~ rhyme).each { match -> // #2 Matcher.each()
+    found += match + ' '
+}
+assert found == 'rain Spain plain '
+
+def cloze = myFairStringy.replaceAll(rhyme){ it-'ain'+'___' } //#3 it represents the matching substring
+assert cloze == 'The r___ in Sp___ stays mainly in the pl___!'
+def holder = ''
+myFairStringy.replaceAll(rhyme){ holder += it-'ain'+'___' }
+println holder  // weird; 'holder' only gets the matched pieces w/substitutions
+println myFairStringy.replaceAll(rhyme){ it-'ain'+'___' }   // whereas this is the whole sentence w/the substitutions
+
+def matcher = 'a b c' =~ /\S/
+assert matcher[0] == 'a'
+assert matcher[1..2] == ['b','c']
+assert matcher.size() == 3
+
