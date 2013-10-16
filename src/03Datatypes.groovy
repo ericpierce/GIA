@@ -261,3 +261,5 @@ many.times{
 }
 timePredef = System.nanoTime() - start
 assert timeImplicit > timePredef * 2 // #4
+println "timeImplicit:"+timeImplicit
+println "timePredef:"+timePredef
