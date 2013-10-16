@@ -230,3 +230,34 @@ assert matcher[0] == 'a'
 assert matcher[1..2] == ['b','c']
 assert matcher.size() == 3
 
+def matcher2 = 'a:1 b:2 c:3' =~ /(\S+):(\S+)/
+assert matcher2.hasGroup()
+assert matcher2[0] == ['a:1', 'a', '1'] // 1st match
+assert matcher2[1][2] == '2' // 2nd match, 2nd group
+
+def matcher3 = 'a:1 b:2 c:3' =~ /(\S+):(\S+)/
+matcher3.each { full, key, value ->
+    assert full.size() == 3
+    assert key.size() == 1 // a,b,c
+    assert value.size() == 1 // 1,2,3
+}
+
+// Listing 3.9 Increase performance with pattern reuse.
+def twister2 = 'she sells sea shells at the sea shore of seychelles'
+// some more complicated regex:
+// word that starts and ends with same letter
+def regex = /\b(\w)\w*\1\b/
+def many = 100 * 1000
+start = System.nanoTime()
+many.times{
+    twister2 =~ regex // #1
+}
+timeImplicit = System.nanoTime() - start
+
+start = System.nanoTime()
+pattern = ~regex    // #2
+many.times{
+    pattern.matcher(twister2) // #3
+}
+timePredef = System.nanoTime() - start
+assert timeImplicit > timePredef * 2 // #4
