@@ -22,6 +22,8 @@ assert 1.23.class.name == "java.math.BigDecimal"
 assert 1.4E4.class.name == "java.math.BigDecimal"
 
 // 3.2 Casting lists and maps to arbitrary classes
+import com.jidesoft.range.IntegerRange
+
 import java.awt.*
 
 Point topLeft = new Point(0, 0) // classic
@@ -247,6 +249,12 @@ def twister2 = 'she sells sea shells at the sea shore of seychelles'
 // some more complicated regex:
 // word that starts and ends with same letter
 def regex = /\b(\w)\w*\1\b/
+def matcher4 = twister2 =~ regex
+println "demo " + matcher4.class.name + " object"
+matcher4.each { match, group ->
+    println "   match: "+ match + " / group: " + group
+}
+
 def many = 100 * 1000
 start = System.nanoTime()
 many.times{
@@ -255,7 +263,11 @@ many.times{
 timeImplicit = System.nanoTime() - start
 
 start = System.nanoTime()
-pattern = ~regex    // #2
+pattern = ~regex    // #2   Convert string var into regex Pattern obj
+println "same demo but w/" + pattern.class.name + " object (~regex) which utilizes 'finite state machine' for speed"
+pattern.matcher(twister2).each { match, group ->
+    println "   match: "+ match + " / group: " + group
+}
 many.times{
     pattern.matcher(twister2) // #3
 }
@@ -263,3 +275,42 @@ timePredef = System.nanoTime() - start
 assert timeImplicit > timePredef * 2 // #4
 println "timeImplicit:"+timeImplicit
 println "timePredef:"+timePredef
+
+// Listing 3.10 Patterns for classification
+def fourLetters = ~/\w{4}/
+assert fourLetters.isCase('work')   // argument (candidate) is a case of fourletters (classifier)
+assert 'love' in fourLetters
+switch('beer'){
+    case ~/\w{4}/ : assert true; break
+    default : assert false
+}
+beasts = ['bear','wolf','tiger','regex']
+assert beasts.grep(fourLetters) == ['bear','wolf']
+
+// 3.6.1 Coercion with numeric operators
+def num = 2147483647   // Integer max
+assert num instanceof Integer
+num++
+assert num == -2147483648
+assert num instanceof Integer
+
+def num2 = 2147483647   // Integer max
+assert num2 instanceof Integer
+num2 = num2**2  // coerces to BigInteger
+assert num2 instanceof BigInteger
+println num2
+
+// 3.6.2 GDK methods for numbers
+assert 1 == (-1).abs()
+assert 2 == 2.5.toInteger() // conversion
+assert 2 == 2.5 as Integer // enforced coercion
+assert 2 == (int) 2.5 // cast
+assert 3 == 2.5f.round()
+assert 3.142 == Math.PI.round(3)
+assert 4 == 4.5f.trunc()
+assert 2.718 == Math.E.trunc(3)
+assert '2.718'.isNumber() // String methods
+assert 5 == '5'.toInteger()
+assert 5 == '5' as Integer
+assert 53 == (int) '5' // gotcha!
+assert '6 times' == 6 + ' times' // Number + String
