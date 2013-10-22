@@ -22,8 +22,6 @@ assert 1.23.class.name == "java.math.BigDecimal"
 assert 1.4E4.class.name == "java.math.BigDecimal"
 
 // 3.2 Casting lists and maps to arbitrary classes
-import com.jidesoft.range.IntegerRange
-
 import java.awt.*
 
 Point topLeft = new Point(0, 0) // classic
@@ -312,5 +310,38 @@ assert 2.718 == Math.E.trunc(3)
 assert '2.718'.isNumber() // String methods
 assert 5 == '5'.toInteger()
 assert 5 == '5' as Integer
-assert 53 == (int) '5' // gotcha!
+assert 53 == (int) '5' // gotcha!   GOTCHA!!!!   53 is the unicode value
+assert 54 == (int) '6' // gotcha!   GOTCHA!!!!   54 is the unicode value
 assert '6 times' == 6 + ' times' // Number + String
+
+// Listing 3.11 GDK methods on numbers
+def store = ''
+10.times{ // #1 Repetition
+    store += 'x'
+}
+assert store == 'xxxxxxxxxx'
+
+store = ''
+1.upto(5) { number -> // #2 Walking up with loop variable
+    store += number
+}
+assert store == '12345'
+
+store = 0
+1.upto(5) { number -> // #2 Walking up with loop variable
+    store += number
+}
+assert store == 15
+
+store = ''
+2.downto(-2) { number -> // #3 Walking down
+    store += number + ' '
+}
+assert store == '2 1 0 -1 -2 '
+
+store = ''
+0.step(0.5, 0.1 ){ number -> // #4 Walking with step width
+    store += number + ' '
+}
+assert store == '0 0.1 0.2 0.3 0.4 '
+
