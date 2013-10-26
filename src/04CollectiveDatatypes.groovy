@@ -3,6 +3,7 @@ assert (0..10).contains(0) //#A
 assert (0..10).contains(5) //#A
 assert (0..10).contains(10) //#A
 assert (0..10).contains(-1) == false //#A
+assert !(0..10).contains(-1) //#A
 assert (0..10).contains(11) == false //#A
 assert (0..<10).contains(9) //#B
 assert (0..<10).contains(10) == false //#B
@@ -110,3 +111,28 @@ for (day in mon..fri) {
     worklog += day.toString() + ' '
 }
 assert worklog == 'Mon Tue Wed Thu Fri '
+
+// Listing 4.4 Specifying lists
+List myList = [1, 2, 3]
+
+assert myList.size() == 3
+assert myList[0]== 1
+assert myList instanceof ArrayList
+
+List emptyList = []
+assert emptyList.size() == 0
+
+List longList = (0..1000).toList()      // convert range to list
+assert longList[555] == 555
+
+List explicitList = new ArrayList()     // old school
+explicitList.addAll(myList)             //#1 - 'addAll' provided by java.util.List
+assert explicitList.size() == 3
+explicitList[0] = 10
+assert explicitList[0] == 10
+
+explicitList = new LinkedList(myList)   // #1 - old school via constructor
+assert explicitList.size() == 3
+explicitList[0] = 10
+assert explicitList[0] == 10
+
