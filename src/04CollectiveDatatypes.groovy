@@ -136,3 +136,57 @@ assert explicitList.size() == 3
 explicitList[0] = 10
 assert explicitList[0] == 10
 
+// Listing 4.5 Accessing parts of a list with the overloaded subscript operator
+myList = ['a','b','c','d','e','f']
+assert myList[0..2] == ['a','b','c']    //#A getAt(Range)
+assert myList[0,2,4] == ['a','c','e']   //#B getAt(collection of indexes)
+myList[0..2] = ['x','y','z']                //#C putAt(Range)
+assert myList == ['x','y','z','d','e','f']
+
+myList[3..5] = []               //#1 Removing elements
+assert myList == ['x','y','z']
+
+myList[1..1] = [0, 1, 2]        //#2 Adding elements
+assert myList == ['x', 0, 1, 2, 'z']
+assert myList[-1..-3] == ['z',2,1]
+
+// Listing 4.6 List operators involved in adding and removing items
+myList = []
+
+myList += 'a'           //#A plus(Object)
+assert myList == ['a']
+
+myList += ['b','c']         //#B plus(Collection)
+assert myList == ['a','b','c']
+
+myList = []
+myList << 'a' << 'b'
+assert myList == ['a','b'] //#C leftShift is like append
+
+assert myList - ['b'] == ['a']      //#D minus(Collection)
+
+assert myList * 2 == ['a','b','a','b'] //#E Multiply
+
+// Listing 4.7 Lists taking part in control structures
+myList = ['a', 'b', 'c']
+
+assert myList.isCase('a')
+assert 'b' in myList
+
+def candidate = 'c'
+switch(candidate){
+    case myList : assert true; break    //#1 Classify by containment
+    default : assert false
+}
+
+assert ['x','a','z'].grep(myList) == ['a'] //#2 Intersection filter
+
+myList = []
+if (myList) assert false        //#3 Empty lists are false
+
+// Lists can be iterated with a 'for' loop
+def expr = ''
+for (i in [1,'*',5]){       // #4 for in Collection
+    expr += i
+}
+assert expr == '1*5'
