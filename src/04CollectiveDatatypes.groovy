@@ -8,12 +8,12 @@ assert (0..10).contains(11) == false //#A
 assert (0..<10).contains(9) //#B
 assert (0..<10).contains(10) == false //#B
 
-def a = 0..10 //#1
-assert a instanceof Range //#1
-assert a.contains(5) //#1
+def aRange = 0..10 //#1
+assert aRange instanceof Range //#1
+assert aRange.contains(5) //#1
 
-a = new IntRange(0,10) //#C
-assert a.contains(5) //#C
+aRange = new IntRange(0,10) //#C
+assert aRange.contains(5) //#C
 
 assert (0.0..1.0).contains(1.0) //#D
 assert (0.0..1.0).containsWithinBounds(0.5) //#D
@@ -190,3 +190,60 @@ for (i in [1,'*',5]){       // #4 for in Collection
     expr += i
 }
 assert expr == '1*5'
+
+// Listing 4.8 Methods to manipulate list content
+assert [1,[2,3]].flatten() == [1,2,3]
+assert [1,2,3].intersect([4,3,1])== [3,1]
+assert [1,2,3].disjoint([4,5,6])        // returns true when the intersection is empty
+
+def list = [1,2,3]
+popped = list.pop()     //#1 Treating a list like a stack
+assert popped == 3
+assert list == [1,2]
+
+assert [1,2].reverse() == [2,1]
+assert [3,1,2].sort() == [1,2,3]
+
+list = [ [1,0], [0,1,2] ]
+list = list.sort { a,b -> a[0] <=> b[0] }   //#2 Comparing lists by first element;  "If the Closure has two parameters it is used like a traditional Comparator. I.e. it should compare its two parameters for order, returning a negative integer, zero, or a positive integer when the first parameter is less than, equal to, or greater than the second respectively."
+assert list == [ [0,1,2], [1,0] ]
+
+list = list.sort { item -> item.size() }    //#3 Comparing lists by size (number of elements)
+assert list == [ [1,0], [0,1,2] ]
+
+assert ["hi","hey","hello"] == ["hello","hi","hey"].sort { it.length() }    //#3 Comparing lists by element string length
+
+list = ['a','b','c']
+list.remove(2)              //#4 Removing by index
+assert list == ['a','b']
+list.remove('b')         //#5 Removing by value
+assert list == ['a']
+
+list = ['a','b','b','c']
+list.removeAll(['b','c'])
+assert list == ['a']
+
+def list2 = ['a','b','b','c']
+list.remove(['b','c'])      // so how is removeAll different?
+assert list == ['a']
+
+def doubled = [1,2,3].collect{ item ->   //#6 Transforming one list into another
+    item*2
+}
+assert doubled == [2,4,6]
+
+def odd = [1,2,3].findAll{ item ->       //#7 Finding every element matching the closure
+    item % 2 == 1
+}
+assert odd == [1,3]
+
+// uniqueify a list
+def x = [1,1,1]
+assert [1] == new HashSet(x).toList()
+assert [1] == x.unique()
+
+// remove nulls from list
+def x2 = [1,null,1]
+assert [1,1] == x2.findAll{it != null}
+assert [1,1] == x2.grep{it}
+
