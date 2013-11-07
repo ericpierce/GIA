@@ -247,3 +247,80 @@ def x2 = [1,null,1]
 assert [1,1] == x2.findAll{it != null}
 assert [1,1] == x2.grep{it}
 
+// Listing 4.9 List query, iteration, and accumulation
+def list3 = [1, 2, 3]
+assert list3.first() == 1
+assert list3.head() == 1
+assert list3.tail() == [2, 3]
+assert list3.last() == 3
+assert list3.count(2) == 1 //#A Querying - this one counts how many times '2' is in the list.
+assert list3.max() == 3 //#A
+assert list3.min() == 1 //#A
+
+def list4 = [1, 2, 2, 3, 4]
+assert list4.count(2) == 2 //#A Querying
+
+//#A
+
+def even = list3.find { item -> //#A
+    item % 2 == 0 //#A
+} //#A
+assert even == 2 //#A
+assert even != [2] //#A
+
+def even4 = list4.find { item -> //#A
+    item % 2 == 0 //#A
+} //#A
+
+assert even4 == 2 //#A doesn't find the 4?
+
+//#A
+assert list3.every { item -> item < 5 } //#A
+assert list3.any { item -> item < 2 } //#A
+
+def store = 0
+list3.each { item -> //#B Iteration
+    store += item //#B
+} //#B
+assert store == 6 //#B
+
+store = ''
+list3.each { item -> //#B Iteration
+    store += item //#B
+} //#B
+assert store == '123' //#B
+
+//#B
+store = '' //#B
+list3.reverseEach { item -> //#B
+    store += item //#B
+} //#B
+assert store == '321' //#B
+
+//#B
+store = '' //#B
+list3.eachWithIndex { item, index -> //#B
+    store += "$index:$item " //#B
+} //#B
+assert store == '0:1 1:2 2:3 ' //#B
+
+assert list3.join('-') == '1-2-3' //#C Accumulation
+
+result = list3.inject(0) { clinks, guests -> //#C
+    clinks + guests //#C
+} //#C
+assert result == 0 + 1 + 2 + 3 //#C
+assert list3.sum() == 6 //#C
+
+result = list3.inject(2) { clinks, guests -> //#C
+    clinks + guests //#C
+} //#C
+assert result == 0 + 1 + 2 + 3 //#C
+assert list3.sum() == 6 //#C
+
+
+//#C
+factorial = list3.inject(1) { fac, item -> //#C
+    fac * item //#C
+} //#C
+assert factorial == 1 * 1 * 2 * 3 //#C
