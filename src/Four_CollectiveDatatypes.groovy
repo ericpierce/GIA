@@ -18,7 +18,7 @@ assert aRange.contains(5) //#C
 assert (0.0..1.0).contains(1.0) //#D
 assert (0.0..1.0).containsWithinBounds(0.5) //#D
 
-(0.0..1.0).each { print ' / ' + it }
+(0.0..1.0).each { println ' / ' + it }
 
 def today = new Date() //#2
 def yesterday = today - 1 //#2
@@ -260,22 +260,28 @@ assert list3.min() == 1 //#A
 def list4 = [1, 2, 2, 3, 4]
 assert list4.count(2) == 2 //#A Querying
 
-//#A
-
 def even = list3.find { item -> //#A
     item % 2 == 0 //#A
 } //#A
 assert even == 2 //#A
 assert even != [2] //#A
 
-def even4 = list4.find { item -> //#A
+even = list4.find { item -> //#A
     item % 2 == 0 //#A
 } //#A
 
-assert even4 == 2 //#A doesn't find the 4?
+assert even == 2 //#A only finds the first match
+
+even = list4.findAll { item -> //#A
+    item % 2 == 0 //#A
+} //#A
+
+assert even == [2,2,4] //#A only finds the first match
+
 
 //#A
 assert list3.every { item -> item < 5 } //#A
+assert list3.every { it < 5 } //#A
 assert list3.any { item -> item < 2 } //#A
 
 def store = 0
@@ -309,18 +315,42 @@ assert list3.join('-') == '1-2-3' //#C Accumulation
 result = list3.inject(0) { clinks, guests -> //#C
     clinks + guests //#C
 } //#C
+// clinks on each iteration: 1 (1+0), 3 (2+1), 6 (3+3)
 assert result == 0 + 1 + 2 + 3 //#C
 assert list3.sum() == 6 //#C
 
 result = list3.inject(2) { clinks, guests -> //#C
+    println "$clinks + $guests"
     clinks + guests //#C
 } //#C
-assert result == 0 + 1 + 2 + 3 //#C
-assert list3.sum() == 6 //#C
+// clinks on each iteration: 3 (2+1), 5 (3+2), 8 (5+3)
+assert result == 5 + 3 //#C     The last click + the last list element
 
 
 //#C
 factorial = list3.inject(1) { fac, item -> //#C
+    println "$fac * $item"
     fac * item //#C
+// fac on each iteration: 1 (1*1), 2 (1*2), 6 (2*3)
 } //#C
 assert factorial == 1 * 1 * 2 * 3 //#C
+
+// Listing 4.10 Quicksort with lists
+def quickSort(list) {
+    if (list.size() < 2) return list
+    def pivot = list[list.size().intdiv(2)]
+    def left = list.findAll { item -> item < pivot }    //#1 Classify by pivot
+    def middle = list.findAll { item -> item == pivot } //#1 Classify by pivot
+    def right = list.findAll { item -> item > pivot }   //#1 Classify by pivot
+    return quickSort(left) + middle + quickSort(right)  //#A Recursive calls
+}
+
+assert quickSort([]) == []
+assert quickSort([1]) == [1]
+assert quickSort([1,2]) == [1,2]
+assert quickSort([2,1]) == [1,2]
+assert quickSort([3,1,2]) == [1,2,3]
+assert quickSort([3,1,2,2]) == [1,2,2,3]
+assert quickSort([1.0f,'a',10,null]) == [null,1.0f,10,'a'] //#2 Ducktyped items
+assert quickSort('bca') == 'abc'.toList()       //#3 Ducktyped structure
+
