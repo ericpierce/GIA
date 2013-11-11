@@ -354,3 +354,64 @@ assert quickSort([3,1,2,2]) == [1,2,2,3]
 assert quickSort([1.0f,'a',10,null]) == [null,1.0f,10,'a'] //#2 Ducktyped items
 assert quickSort('bca') == 'abc'.toList()       //#3 Ducktyped structure
 
+// Listing 4.11 Specifying maps
+def myMap = [a:1, b:2, c:3]
+assert myMap instanceof LinkedHashMap
+assert myMap.size() == 3
+assert myMap['a'] == 1
+
+def emptyMap = [:]
+assert emptyMap.size() == 0
+
+def explicitMap = new TreeMap()
+explicitMap.putAll(myMap)   // using explict map type and its constructor
+assert explicitMap['a'] == 1
+
+def composed = [x:'y', *:myMap]         //#A Spread operator
+assert composed == [x:'y', a:1, b:2, c:3]
+
+assert ['a':1] == [a:1]
+
+x = 'a'
+assert ['x':1] == [x:1]
+assert ['a':1] == [(x):1]   // force Groovy to recognize a symbol as an expression by putting it inside parentheses
+
+// Listing 4.12 Accessing maps (GDK map methods)
+myMap = [a:1, b:2, c:3]
+assert myMap['a']       == 1    //#A Retrieve existing elements
+assert myMap.a          == 1
+assert myMap.get('a')   == 1
+assert myMap.get('a',0) == 1
+
+assert myMap['d'] == null   //#B Attempt to retrieve missing elements
+assert myMap.d == null
+assert myMap.get('d') == null
+
+assert myMap.get('d',0) == 0    //#C Default value
+assert myMap.d == 0
+
+myMap['d'] = 1      //#D Single putA
+assert myMap.d == 1
+myMap.d = 2
+assert myMap.d == 2
+
+myMap2 = ['a.b':1]       // special chars for key
+assert myMap2.'a.b' == 1     // myMap.a.b doesn't work
+
+// Listing 4.13 Query methods on maps
+myMap = [a:1, b:2, c:3]
+def other = [b:2, c:3, a:1]
+
+assert myMap == other //#A Call to equals
+
+assert !myMap.isEmpty() //#B JDK methods
+assert myMap.size() == 3 //#B
+assert myMap.containsKey('a') //#B
+assert myMap.containsValue(1) //#B
+assert myMap.entrySet() instanceof Collection
+
+assert myMap.any {entry -> entry.value > 2 } //#1 GDK methods
+assert myMap.every {entry -> entry.key < 'd'} //#1
+assert myMap.keySet() == ['a','b','c'] as Set   //#C Set equals
+assert myMap.values().toList() == [1, 2, 3]     //#D List equals
+
