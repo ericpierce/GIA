@@ -415,3 +415,67 @@ assert myMap.every {entry -> entry.key < 'd'} //#1
 assert myMap.keySet() == ['a','b','c'] as Set   //#C Set equals
 assert myMap.values().toList() == [1, 2, 3]     //#D List equals
 
+// Listing 4.14 Iterating over maps (GDK)
+myMap = [a:1, b:2, c:3]
+
+store = '' //#A
+myMap.each { entry -> //#A Iterate over entries
+    store += entry.key //#A
+    store += entry.value //#A
+}
+assert store == 'a1b2c3'
+
+store = '' //#B Iterate over keys/values
+myMap.each { key, value ->  //#B
+    store += key   //#B
+    store += value   //#B
+}
+assert store == 'a1b2c3'
+
+
+store = '' //#C Iterate over just the keys
+for (key in myMap.keySet()) { //#C
+    store += key //#C
+}
+assert store == 'abc'
+
+store = '' //#D Iterate over just the values
+for (value in myMap.values()) { //#D
+    store += value //#D
+}
+assert store == '123'
+
+// Listing 4.15 Changing map content and building new objects from it
+myMap = [a:1, b:2, c:3]
+myMap.clear()
+assert myMap.isEmpty()
+
+myMap = [a:1, b:2, c:3]
+myMap.remove('a')
+assert myMap.size() == 2
+
+assert [a:1] + [b:2] == [a:1, b:2]
+
+myMap = [a:1, b:2, c:3]
+def abMap = myMap.subMap(['a', 'b'])    //#1 Create a view onto the original map
+assert abMap.size() == 2
+assert abMap == [b:2,a:1]
+
+abMap = myMap.findAll{ entry -> entry.value < 3 }
+assert abMap.size() == 2
+assert abMap.a == 1
+assert abMap == [b:2,a:1]
+
+def found = myMap.find { entry -> entry.value < 2 }
+assert found.key == 'a'
+assert found.value == 1
+
+doubled = myMap.collect { entry -> entry.value *= 2 }
+assert doubled instanceof List
+assert doubled.every { item -> item % 2 == 0 }
+assert doubled == [2,4,6]
+
+def addTo = []
+myMap.collect(addTo) { entry -> entry.value *= 2 }  // adds all closure results directly to 'addTo' collection
+assert addTo instanceof List
+assert addTo.every { item -> item % 2 == 0 }
