@@ -479,3 +479,7 @@ def addTo = []
 myMap.collect(addTo) { entry -> entry.value *= 2 }  // adds all closure results directly to 'addTo' collection
 assert addTo instanceof List
 assert addTo.every { item -> item % 2 == 0 }
+
+// 2 more map methods from GDK
+// asImmutable - protect the map from unintended content changes
+// asSynchronized - protect the map from concurrent access
